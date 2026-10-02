@@ -1,0 +1,12 @@
+#!/bin/sh
+set -eu
+cd "$(dirname "$0")"
+
+if ! command -v erlc >/dev/null 2>&1 || ! command -v erl >/dev/null 2>&1; then
+    echo "Erlang/OTP is required. Install it and ensure erl and erlc are on PATH." >&2
+    exit 1
+fi
+
+mkdir -p ebin
+erlc +debug_info -o ebin src/*.erl
+exec erl -noshell -pa ebin -run gossip main "$@" -s init stop
